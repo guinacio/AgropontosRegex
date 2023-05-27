@@ -5,11 +5,20 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from statistics import mode
 from tkinter import *
+from tkinter import filedialog
 
 import ocrmypdf
 from pypdf import PdfReader
 
-appName = "AgroPontos RegEx v1.2"
+appName = "AgroPontos RegEx v1.3"
+
+def pick_file(self):
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        self.fileLabel.config(text=file_path)
+    else:
+        self.fileLabel.config(text="Arquivo não existe ou não foi selecionado um arquivo.")
+    return file_path
 
 #Mostra as mensagens na interface
 def show_text(sText, self):
@@ -34,7 +43,7 @@ def remove_extra_dot(s):
 #Utiliza a biblioteca OCRMYPDF para ler PDFs escaneados e consertá-los (desvira páginas, corrige angulação...)
 #Ou se o PDF já contém texto, utiliza a biblioteca pypdf para extraí-lo
 def process_pdf(self):
-    filename = self.fileEntry.get()+'.pdf'
+    filename = self.fileLabel.cget("text")
     
     if not os.path.exists(filename):
         show_text("Arquivo não encontrado: "+filename, self)
@@ -53,7 +62,7 @@ def process_pdf(self):
     else:
         show_text("Processando PDF... Aguarde, isso pode levar alguns minutos.", self)
         if __name__ == '__main__':  # Da biblioteca, para funcionar direito em Windows e Mac
-            ocrmypdf.ocr(filename,'Novo_'+filename, deskew=True, clean=True, rotate_pages=True, force_ocr=True, language='por', sidecar=filename[:-3]+'txt')
+            ocrmypdf.ocr(filename,filename[:-4]+'_NOVO.pdf', deskew=True, clean=True, rotate_pages=True, force_ocr=True, language='por', sidecar=filename[:-3]+'txt')
         show_text("PDF processado com sucesso!", self)
 
 #Exporta as coordenadas encontradas para um arquivo CSV
@@ -75,7 +84,7 @@ def export_csv(self):
     else:
         matches = matchesAux
 
-    filename = self.fileEntry.get()
+    filename = self.fileLabel.cget("text")[:-4]
 
     if self.coordType.get() == "UTM":
         with open(filename+'.csv', 'w', newline='') as f:
@@ -130,7 +139,7 @@ def export_csv(self):
 
 #Encontra as coordenadas no arquivo TXT, utilizando-se de regras de Regex (https://docs.python.org/3/library/re.html)
 def match_string(self):
-    filename = self.fileEntry.get()+'.txt'
+    filename = self.fileLabel.cget('text')[:-4] + '.txt'
     self.window.update()
     # print (window.winfo_width())
     # print (window.winfo_height())
@@ -205,10 +214,10 @@ class GUI():
         self.frameBottom = tk.Frame(self.window, bg="white")
 
         #Cria e adiciona elementos ao frame superior
-        self.fileLabel = ttk.Label(self.frameTop, text="Digite o nome do arquivo PDF/TXT:")
+        self.fileLabel = ttk.Label(self.frameTop, text="Selecione o arquivo PDF/TXT:")
         self.fileLabel.pack(side="top")
-        self.fileEntry = ttk.Entry(self.frameTop)
-        self.fileEntry.pack(side="top")
+        self.fileButton = tk.Button(self.frameTop, text="Selecionar", command=lambda: pick_file(self))
+        self.fileButton.pack(side="top")
 
         self.startLabel = ttk.Label(self.frameTop, text="Digite o início do padrão:")
         self.startLabel.pack(anchor='c')
