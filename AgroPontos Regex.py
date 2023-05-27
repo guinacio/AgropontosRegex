@@ -12,6 +12,7 @@ from pypdf import PdfReader
 
 appName = "AgroPontos RegEx v1.3"
 
+#Abre janela do windows para seleção do arquivo PDF/TXT
 def pick_file(self):
     file_path = filedialog.askopenfilename()
     if file_path:
