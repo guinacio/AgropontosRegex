@@ -6,6 +6,11 @@ It works for two types of coordinates, **UTM** and **Lat-Long**. And generates a
 
 The program interface can be used like a notepad to correct any errors or wrong characters brought by the OCR scanning. It also generates a new PDF file correcting the page tilt and rotation.
 
+## Screenshot
+<img src="https://github.com/guinacio/AgropontosRegex/assets/2325925/af976dc1-9415-4b6a-b2bb-71f8e9642555" width=35% height=35%>
+
+## Installation
+
 You need to install the following for Windows:
 
 I recommend using the [Chocolatey](https://chocolatey.org/) package manager to install some of the following: (***Run in an Administrator command prompt***)
