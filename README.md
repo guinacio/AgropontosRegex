@@ -11,7 +11,7 @@ The program interface can be used like a notepad to correct any errors or wrong 
 
 ## Installation
 
-You need to install the following for Windows:
+You need to install the following packages for Windows:
 
 I recommend using the [Chocolatey](https://chocolatey.org/) package manager to install some of the following: (***Run in an Administrator command prompt***)
 
