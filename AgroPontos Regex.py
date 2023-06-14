@@ -10,16 +10,16 @@ from tkinter import filedialog
 import ocrmypdf
 from pypdf import PdfReader
 
-appName = "AgroPontos RegEx v1.3"
+appName = "AgroPontos RegEx v1.4"
 
 #Abre janela do windows para seleção do arquivo PDF/TXT
 def pick_file(self):
-    file_path = filedialog.askopenfilename()
-    if file_path:
-        self.fileLabel.config(text=file_path)
+    filePath = filedialog.askopenfilename()
+    if filePath:
+        self.fileLabel.config(text=filePath)
     else:
         self.fileLabel.config(text="Arquivo não existe ou não foi selecionado um arquivo.")
-    return file_path
+    return filePath
 
 #Mostra as mensagens na interface
 def show_text(sText, self):
@@ -44,26 +44,28 @@ def remove_extra_dot(s):
 #Utiliza a biblioteca OCRMYPDF para ler PDFs escaneados e consertá-los (desvira páginas, corrige angulação...)
 #Ou se o PDF já contém texto, utiliza a biblioteca pypdf para extraí-lo
 def process_pdf(self):
-    filename = self.fileLabel.cget("text")
+    filePath = self.fileLabel.cget("text")
+    txtFilePath = os.path.splitext(filePath)[0]  + '.txt'
     
-    if not os.path.exists(filename):
-        show_text("Arquivo não encontrado: "+filename, self)
+    if not os.path.exists(filePath):
+        show_text("Arquivo não encontrado: "+filePath, self)
         return None
 
     if self.varText.get() == 1:
         show_text("Extraindo texto do PDF...", self)
         textPDF = ''
-        reader = PdfReader(filename)
+        reader = PdfReader(filePath)
+        
         for page in reader.pages:
             textPDF = textPDF + str(page.extract_text(0))
-        with open(filename[:-3]+'txt', 'w', encoding='UTF-8') as f:
+        with open(txtFilePath, 'w', encoding='UTF-8') as f:
             f.write(textPDF)
         show_text("Texto extraído com sucesso!", self)
         return
     else:
         show_text("Processando PDF... Aguarde, isso pode levar alguns minutos.", self)
         if __name__ == '__main__':  # Da biblioteca, para funcionar direito em Windows e Mac
-            ocrmypdf.ocr(filename,filename[:-4]+'_NOVO.pdf', deskew=True, clean=True, rotate_pages=True, force_ocr=True, language='por', sidecar=filename[:-3]+'txt')
+            ocrmypdf.ocr(filePath,os.path.splitext(filePath)[0]+'_NOVO.pdf', deskew=True, clean=True, rotate_pages=True, force_ocr=True, language='por', sidecar=txtFilePath)
         show_text("PDF processado com sucesso!", self)
 
 #Exporta as coordenadas encontradas para um arquivo CSV
@@ -85,10 +87,10 @@ def export_csv(self):
     else:
         matches = matchesAux
 
-    filename = self.fileLabel.cget("text")[:-4]
+    csvFilePath = os.path.splitext(self.fileLabel.cget("text"))[0] + '.csv'
 
     if self.coordType.get() == "UTM":
-        with open(filename+'.csv', 'w', newline='') as f:
+        with open(csvFilePath, 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow('NE')
             NList = []
@@ -113,7 +115,7 @@ def export_csv(self):
                 print("Coordenadas com Erro: \n" + errorList)
 
     if self.coordType.get() == "Lat-Long":
-        with open(filename+'.csv', 'w', newline='') as f:
+        with open(csvFilePath, 'w', newline='') as f:
             writer = csv.writer(f, quotechar = "@")
             writer.writerow(["NOME","LONG","LAT"])
             nameList = []
@@ -140,17 +142,17 @@ def export_csv(self):
 
 #Encontra as coordenadas no arquivo TXT, utilizando-se de regras de Regex (https://docs.python.org/3/library/re.html)
 def match_string(self):
-    filename = self.fileLabel.cget('text')[:-4] + '.txt'
+    txtFilePath = os.path.splitext(self.fileLabel.cget("text"))[0] + '.txt'
     self.window.update()
     # print (window.winfo_width())
     # print (window.winfo_height())
     # print (window.winfo_geometry())
 
-    if not os.path.exists(filename):
-        show_text("Arquivo não encontrado: "+filename, self)
+    if not os.path.exists(txtFilePath):
+        show_text("Arquivo não encontrado: "+txtFilePath, self)
         return None
     
-    with open(filename, 'r', encoding='UTF-8') as txtFile:
+    with open(txtFilePath, 'r', encoding='UTF-8') as txtFile:
         txtData = txtFile.read()      
         
     startPattern = self.startEntry.get()
@@ -160,14 +162,14 @@ def match_string(self):
     
     if startPattern[0].isalpha() or startPattern[0]=='\\':
         if endPattern[0].isalpha() or endPattern[0]=='\\':
-            pattern = startPattern + '.{10,40}?' + endPattern
+            pattern = startPattern + '.{10,100}?' + endPattern
         else:
-            pattern = startPattern + '.{10,40}?\\' + endPattern
+            pattern = startPattern + '.{10,100}?\\' + endPattern
     else:
         if endPattern[0].isalpha() or endPattern[0]=='\\':
-            pattern = '\\' + startPattern + '.{10,40}?' + endPattern
+            pattern = '\\' + startPattern + '.{10,100}?' + endPattern
         else:
-            pattern = '\\' + startPattern + '.{10,40}?\\' + endPattern
+            pattern = '\\' + startPattern + '.{10,100}?\\' + endPattern
 
     matchesAux = []
     matches = re.findall(pattern, txtData, flags=re.DOTALL)
