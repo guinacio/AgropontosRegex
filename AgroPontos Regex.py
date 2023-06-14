@@ -80,7 +80,7 @@ def export_csv(self):
     matchesAux = matches.split("\n")
     matches = []
     
-    numChars = int(self.num_chars_spinbox.get())
+    numChars = int(self.numCharsSpinbox.get())
     if numChars > 0:
         for matchAux in matchesAux:
             matches.append(matchAux[:-numChars])
@@ -237,12 +237,12 @@ class GUI():
         self.splitEntry = ttk.Entry(self.frameTop)
         self.splitEntry.pack()
 
-        self.num_chars_label = ttk.Label(self.frameTop, text="Qtd de caracteres para remover do fim:")
-        self.num_chars_label.pack()
+        self.numCharsLabel = ttk.Label(self.frameTop, text="Qtd de caracteres para remover do fim:")
+        self.numCharsLabel.pack()
         self.numCharsDefault = StringVar(self.frameTop)
         self.numCharsDefault.set('0')
-        self.num_chars_spinbox = ttk.Spinbox(self.frameTop, from_=0, to=50, width=5, textvariable=self.numCharsDefault)
-        self.num_chars_spinbox.pack()
+        self.numCharsSpinbox = ttk.Spinbox(self.frameTop, from_=0, to=50, width=5, textvariable=self.numCharsDefault)
+        self.numCharsSpinbox.pack()
 
         self.varText = tk.IntVar()
         self.checkText = ttk.Checkbutton(self.frameTop, text='PDF é Texto',variable=self.varText, onvalue=1, offvalue=0)
