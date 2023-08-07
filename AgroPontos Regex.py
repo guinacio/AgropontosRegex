@@ -4,13 +4,12 @@ import re
 import tkinter as tk
 import tkinter.ttk as ttk
 from statistics import mode
-from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog, StringVar, END
 
 import ocrmypdf
 from pypdf import PdfReader
 
-appName = "AgroPontos RegEx v1.4"
+appName = "AgroPontos RegEx v1.5"
 
 #Abre janela do windows para seleção do arquivo PDF/TXT
 def pick_file(self):
